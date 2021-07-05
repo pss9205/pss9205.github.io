@@ -89,13 +89,40 @@ createAudioFileAsync(audioSettings).then(successCallback, failureCallback);
       .catch((error) => console.log(error)) 
       .finally(() => console.log("final!"));
     ```
+- Error Handling
 
-- Promise Chaining
+    catch로 error 처리 가능. 또는 then의 두번째 인자  
 
-    then/catch함수는 새로운 promise를 리턴한다. 이를 통해 chaining이 가능하며, 이전 비동기 작업이 끝난후 다른 비동기 작업을 순차실행할 수 있음.
-    
-    1. then에서 프로미스가 리턴되는 경우, Promise는 그 다음 then에 의해 처리됨
-    2. Promise에서 그냥 값을 리턴하면 Promise.resolve()를 리턴하는것과 같음  
+    ```jsx
+    const getHen = () =>
+        new Promise((resolve, reject) => {
+        setTimeout(() => resolve("hen"), 1000);
+        });
+    const getEgg = (hen) =>
+        new Promise((resolve, reject) => {
+        setTimeout(() => reject(new Error(`${hen} => egg`)), 1000);
+        
+
+    const cook = (egg) =>
+        new Promise((resolve, reject) => {
+        setTimeout(() => resolve(`${egg} => fried egg`), 1000);
+        });
+
+    getHen()
+        .then((hen) => getEgg(hen))
+        .catch((error) => {
+        return "bread";
+        }) //앞의 then에서 발생한 에러 처리
+        .then((egg) => cook(egg))
+        .then((meal) => console.log(meal));
+    ```
+
+### Promise Chaining
+
+then/catch함수는 새로운 promise를 리턴한다. 이를 통해 chaining이 가능하며, 이전 비동기 작업이 끝난후 다른 비동기 작업을 순차실행할 수 있음.
+
+1. then에서 프로미스가 리턴되는 경우, Promise는 그 다음 then에 의해 처리됨
+2. Promise에서 그냥 값을 리턴하면 Promise.resolve()를 리턴하는것과 같음  
 
     ```jsx
     Promise.resolve(10)
@@ -115,57 +142,29 @@ createAudioFileAsync(audioSettings).then(successCallback, failureCallback);
     .then((val) => console.log(val)); //이상한 값
     ```
 
-- Error Handling
+### Promise method
 
-    catch로 error 처리 가능
+- all : 모든 Promise의 처리를 기다림  
 
-    ```jsx
-    const getHen = () =>
-      new Promise((resolve, reject) => {
-        setTimeout(() => resolve("hen"), 1000);
-      });
-    const getEgg = (hen) =>
-      new Promise((resolve, reject) => {
-        //setTimeout(() => reject(new Error(`${hen} => egg`)), 1000);
-        setTimeout(() => resolve(`${hen} => egg`), 1000);
-      });
+```jsx
+function pickAllFruits() {
+    return Promise.all([getApple(), getBanana()]).then((fruits) =>
+    fruits.join(" + ")
+    );
+}
 
-    const cook = (egg) =>
-      new Promise((resolve, reject) => {
-        setTimeout(() => resolve(`${egg} => fried egg`), 1000);
-      });
+pickAllFruits().then(console.log);
+```
 
-    getHen()
-      .then((hen) => getEgg(hen))
-      .catch((error) => {
-        return "bread";
-      }) //앞의 then에서 발생한 에러 처리
-      .then((egg) => cook(egg))
-      .then((meal) => console.log(meal));
-    ```
-- Promise method
+- race : 어느 한개의 Promise 작업만 끝나도 리턴
 
-    - all : 모든 Promise의 처리를 기다림  
+```jsx
+function pickFirstOne() {
+    return Promise.race([getApple(), getBanana()]);
+}
 
-    ```jsx
-    function pickAllFruits() {
-      return Promise.all([getApple(), getBanana()]).then((fruits) =>
-        fruits.join(" + ")
-      );
-    }
-
-    pickAllFruits().then(console.log);
-    ```
-
-    - race : 어느 한개의 Promise 작업만 끝나도 리턴
-
-    ```jsx
-    function pickFirstOne() {
-      return Promise.race([getApple(), getBanana()]);
-    }
-
-    pickFirstOne().then(console.log);
-    ```
+pickFirstOne().then(console.log);
+```
 
 ## Async - Await
 
@@ -175,102 +174,102 @@ Async - Await을 사용하면 기존 Sequential 코드 흐름과 유사하게 �
 
 Promise의 Syntactic sugar
 
-- Async
+### Async
 
-    Promise 방식
+- Promise 방식
 
     ```jsx
     function fetchUser() {
-      return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
         // return `name`; // pending
         resolve(`name`); // fulfilled
         // reject(new Error(`error`)); // rejected
-      });
+        });
     }
 
     const user = fetchUser();
     user.then(console.log);
     ```
 
-    Async 방식
+- Async 방식
 
     Async를 사용하면 코드 블록이 Promise로 리턴됨
 
     ```jsx
     //function declaration
     async function fetchUser() {
-      return `ellie`; //==return Promise.resolve(`ellie`)
+        return `ellie`; //==return Promise.resolve(`ellie`)
     }
 
     //function expression
     const fetchUser = async function() {
-      return `ellie`; 
+        return `ellie`; 
     };
 
     //arrow function
     const fetchUser = async () => {
-      return `ellie`; 
+        return `ellie`; 
     };
 
     const user = fetchUser();
     user.then(console.log);
     ```
 
-- Await
+### Await
 
-    async가 있는 경우에만 사용이 가능함
+async가 있는 경우에만 사용이 가능함
 
-    함수의 작업이 끝날때까지(fulfilled 또는 rejected) 대기
+함수의 작업이 끝날때까지(fulfilled 또는 rejected) 대기
 
-    async-await을 사용하여 기존 언어와 동일한 방식으로 코드 작성가능
+async-await을 사용하여 기존 언어와 동일한 방식으로 코드 작성가능
 
-    에러처리 역시 try-catch를 사용해야함
-    
-    Promise 방식
+에러처리 역시 try-catch를 사용해야함
+
+- Promise 방식
 
     ```jsx
     function delay(ms) {
-      return new Promise (resolve => setTimeout(resolve, ms));
+        return new Promise (resolve => setTimeout(resolve, ms));
     }
 
     function getApple() {
-      return delay(1000)
-      .then(() => `🍎`);
+        return delay(1000)
+        .then(() => `🍎`);
     }
     function getBanana() {
-      return delay(1000)
-      .then(() => `🍌`);
+        return delay(1000)
+        .then(() => `🍌`);
     }
 
     function pickFruits() {
-      return getApple()
-      .then(apple => {
+        return getApple()
+        .then(apple => {
         return getBanana().then(banana => `${apple} + ${banana}`);
-      });
+        });
     }
     pickFruits().then(result => console.log(result));
     ```
 
-    Await 방식
+- Await 방식
 
     ```jsx
     function delay(ms) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
+        return new Promise((resolve) => setTimeout(resolve, ms));
     }
     async function getApple() {
-      await delay(1000);
-      return "apple";
+        await delay(1000);
+        return "apple";
     }
 
     async function getBanana() {
-      await delay(2000);
-      return "banana";
+        await delay(2000);
+        return "banana";
     }
 
     async function pickFruits() {
-      const apple = await getApple();
-      const banana = await getBanana();
-      return `${apple}+${banana}`;
+        const apple = await getApple();
+        const banana = await getBanana();
+        return `${apple}+${banana}`;
     }
 
     pickFruits().then(console.log);
