@@ -1,0 +1,40 @@
+# Matcher
+
+unit test 프레임워크들은 매치되는 조건들을 서술적으로 나열할 수 있도록 한다.  
+이를 통해 개발자는 필요한 match 규칙을 직접 조합할 수 있으므로 다양한 테스트 구문 작성이 가능해진다.   
+javascript의 jest는 expect를 사용해서 matcher들을 사용할 수 있고, java는 hamcrest를 통해 가능하다. 
+
+```java
+//java
+public class DollarTest {
+  @Test 
+  public void dollar() { 
+    Dollar five = new Dollar(5); 
+    Dollar six = new Dollar(6);
+    assertThat(five, is(not(equalTo(six)); 
+  } 
+} 
+```
+```javascript
+//javascript
+test('5 dollar is not equal to 6 dollar',()=>{
+    let five = new Dollar(5);
+    let six = new Dollar(6);
+    expect(five).not.toEqual(six);
+})
+```
+
+### assert문 비교
+출처 : [wiki](https://en.wikipedia.org/wiki/Hamcrest)
+- 1st gen : assert(x==y)  
+    assert문 안에 true 조건을 직접 작성  
+    문제 : assert가 실패할때 적절한 에러 문구를 제공하기가 어렵다.  
+		
+- 2nd gen : assert_equal(x,y) , assert_not_equal(x,y)  
+    각 조건에 따른 assert문을 제공  
+    1st gen보단 에러 문구 제공에 용이하지만 많은 수의 macro가 필요하게됨   
+    
+- 3rd gen : assert_that(x,equal_to(y), assert_that(x,is_not(equal_to(y))  
+    assert_that 구문, 이와 조합하여 사용할 수 있는 matcher 객체를 제공  
+    다양한 assert 구문에 대응할 수 있으면서 적절한 에러 문구도 제공할 수 있음   
+
