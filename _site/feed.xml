@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko"><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="ko" /><updated>2022-04-11T23:03:16+09:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">pss9205</title><author><name>pss9205</name></author><entry><title type="html">Docker 기본 커맨드</title><link href="http://localhost:4000/docker/2022/04/10/Docker-Basic.html" rel="alternate" type="text/html" title="Docker 기본 커맨드" /><published>2022-04-10T23:14:00+09:00</published><updated>2022-04-10T23:14:00+09:00</updated><id>http://localhost:4000/docker/2022/04/10/Docker-Basic</id><content type="html" xml:base="http://localhost:4000/docker/2022/04/10/Docker-Basic.html"><![CDATA[<h2 id="컨테이너">컨테이너</h2>
+
+<p>프로세스 수준의 가상화. 프로그램 코드와 라이브러리와 같은 종속된 항목들을 묶은 패키지</p>
+
+<h3 id="컨테이너-vs-가상머신">컨테이너 vs 가상머신</h3>
+
+<p>가상 머신은 자체 커널을 포함하는 OS를 실행하지만 컨테이너는 Host OS위에서 커널을 공유하며 실행됨.
+때문에 컨테이너가 훨씬 가벼움</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[      Application     ]    [      Application     ]
+[       Lib, Deps      ]    [       Lib, Deps      ]
+[       Conatiner      ]    [           OS         ]
+[        Docker        ]    [    Virtual Machine   ]
+[          OS          ]    [      HyperVisor      ]
+[          H/W         ]    [          H/W         ]
+</code></pre></div></div>
+
+<p>가상 머신 위에 Docker Host를 돌린다면?
+=&gt; 가상화의 장점, 컨테이너의 장점을 모두 챙길 수 있다. Easy to provision, decommission, Quickly scale</p>
+
+<h2 id="도커란">도커란?</h2>
+
+<blockquote>
+  <p>컨테이너 기반의 가상화 플랫폼</p>
+</blockquote>
+
+<p>프로그램이 컨테이너 위에서 실행되기 때문에 프로그램 간 요구하는 라이브러리 버전, OS등이 달라도 이에 구애받지 않고 각 프로그램만의 환경 구축 가능<br />
+프로그램 실행에 필요한 모든 설정을 가지고 있기 때문에 Dev서버, Prod서버와 같이 같은 환경을 재설정 하는 경우에도 쉽게 할 수 있음</p>
+
+<h3 id="command">Command</h3>
+
+<ul>
+  <li>
+    <p>run : docker 컨테이너 실행을 위한 커맨드. 이미지가 없다면 다운 받은 후 실행</p>
+
+    <blockquote>
+      <p>docker run -d -p 80:80 docker/getting-started</p>
+    </blockquote>
+
+    <pre><code class="language-tip">container는 안에 실행중인 프로세스가 있을때만 alive상태를 유지한다.
+</code></pre>
+
+    <p>옵션</p>
+
+    <ol>
+      <li>-d : 백그라운드에서 실행</li>
+      <li>-I stdin / -t stdout : terminal과 docker를 연결하여 interaction 가능하게 해줌</li>
+      <li>-p : docker host와 container간의 포트를 매핑
+        <blockquote>
+          <p>-p 80(host):5000(container)</p>
+        </blockquote>
+      </li>
+      <li>-v : docker host와 container간의 volume 매핑<br />
+컨테이너안의 데이터는 컨테이너가 정지, 삭제되면 모두 제거되기 때문에 호스트의 디렉토리를 마운트하여 사용해야함
+        <blockquote>
+          <p>-v hostpath:containerpath</p>
+        </blockquote>
+      </li>
+      <li>-e : 패스워드와 같이 설정이 필요한 환경 변수 설정
+        <blockquote>
+          <p>-e MYSQL_ROOT_PASSWORD=my-secret-pw</p>
+        </blockquote>
+      </li>
+      <li>-attach : 실행중인 컨테이너에 연결</li>
+    </ol>
+  </li>
+  <li>
+    <p>ps : 실행중인 container 프로세스 목록을 볼 수 있음</p>
+
+    <blockquote>
+      <p>docker ps</p>
+    </blockquote>
+
+    <p>옵션</p>
+
+    <ol>
+      <li>-a 이미 종료된 프로세스 까지 모두 표시</li>
+    </ol>
+  </li>
+  <li>stop : container 정지
+    <blockquote>
+      <p>docker stop {containerId}</p>
+    </blockquote>
+  </li>
+  <li>rm : 컨테이너 데이터 삭제
+    <blockquote>
+      <p>docker rm {containerId}</p>
+    </blockquote>
+  </li>
+  <li>images : image목록 확인
+    <blockquote>
+      <p>docker images</p>
+    </blockquote>
+  </li>
+  <li>rmi : 이미지 삭제
+    <blockquote>
+      <p>docker rmi {imageId}</p>
+    </blockquote>
+  </li>
+  <li>pull : 이미지 다운로드
+    <blockquote>
+      <p>docker pull {imageName}:{tag}</p>
+    </blockquote>
+  </li>
+  <li>exec : 컨테이너에 명령어 실행
+    <blockquote>
+      <p>docker exec {containerId} {command}</p>
+    </blockquote>
+  </li>
+  <li>inspect : 컨테이너의 detail정보를 json 형태로 출력
+    <blockquote>
+      <p>docker inspect {containerId}</p>
+    </blockquote>
+  </li>
+  <li>logs : 로그를 출력함
+    <blockquote>
+      <p>docker logs {containerId}</p>
+    </blockquote>
+  </li>
+</ul>]]></content><author><name>pss9205</name></author><category term="Docker" /><category term="docker" /><summary type="html"><![CDATA[컨테이너]]></summary></entry><entry><title type="html">Matcher</title><link href="http://localhost:4000/unittest/2021/07/05/Matcher.html" rel="alternate" type="text/html" title="Matcher" /><published>2021-07-05T00:17:00+09:00</published><updated>2021-07-05T00:17:00+09:00</updated><id>http://localhost:4000/unittest/2021/07/05/Matcher</id><content type="html" xml:base="http://localhost:4000/unittest/2021/07/05/Matcher.html"><![CDATA[<p>unit test 프레임워크들은 매치되는 조건들을 서술적으로 나열할 수 있도록 한다.<br />
+이를 통해 개발자는 필요한 match 규칙을 직접 조합할 수 있으므로 다양한 테스트 구문 작성이 가능해진다.<br />
+javascript의 jest는 expect를 사용해서 matcher들을 사용할 수 있고, java는 hamcrest를 통해 가능하다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//java</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DollarTest</span> <span class="o">{</span>
+  <span class="nd">@Test</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dollar</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">Dollar</span> <span class="n">five</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Dollar</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
+    <span class="nc">Dollar</span> <span class="n">six</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Dollar</span><span class="o">(</span><span class="mi">6</span><span class="o">);</span>
+    <span class="n">assertThat</span><span class="o">(</span><span class="n">five</span><span class="o">,</span> <span class="n">is</span><span class="o">(</span><span class="n">not</span><span class="o">(</span><span class="n">equalTo</span><span class="o">(</span><span class="n">six</span><span class="o">));</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//javascript</span>
+<span class="nx">test</span><span class="p">(</span><span class="dl">"</span><span class="s2">5 dollar is not equal to 6 dollar</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">five</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dollar</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+  <span class="kd">let</span> <span class="nx">six</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dollar</span><span class="p">(</span><span class="mi">6</span><span class="p">);</span>
+  <span class="nx">expect</span><span class="p">(</span><span class="nx">five</span><span class="p">).</span><span class="nx">not</span><span class="p">.</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">six</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h3 id="assert문-비교">assert문 비교</h3>
+
+<p>출처 : <a href="https://en.wikipedia.org/wiki/Hamcrest">wiki</a></p>
+
+<ul>
+  <li>
+    <p>1st gen : assert(x==y)<br />
+ assert문 안에 true 조건을 직접 작성<br />
+ 문제 : assert가 실패할때 적절한 에러 문구를 제공하기가 어렵다.</p>
+  </li>
+  <li>
+    <p>2nd gen : assert_equal(x,y) , assert_not_equal(x,y)<br />
+ 각 조건에 따른 assert문을 제공<br />
+ 1st gen보단 에러 문구 제공에 용이하지만 많은 수의 macro가 필요하게됨</p>
+  </li>
+  <li>
+    <p>3rd gen : assert_that(x,equal_to(y), assert_that(x,is_not(equal_to(y))<br />
+ assert_that 구문, 이와 조합하여 사용할 수 있는 matcher 객체를 제공<br />
+ 다양한 assert 구문에 대응할 수 있으면서 적절한 에러 문구도 제공할 수 있음</p>
+  </li>
+</ul>]]></content><author><name>pss9205</name></author><category term="UnitTest" /><summary type="html"><![CDATA[unit test 프레임워크들은 매치되는 조건들을 서술적으로 나열할 수 있도록 한다. 이를 통해 개발자는 필요한 match 규칙을 직접 조합할 수 있으므로 다양한 테스트 구문 작성이 가능해진다. javascript의 jest는 expect를 사용해서 matcher들을 사용할 수 있고, java는 hamcrest를 통해 가능하다.]]></summary></entry><entry><title type="html">Promise &amp;amp; Async/Await</title><link href="http://localhost:4000/javascript/2021/07/05/Promise-AsyncAwait.html" rel="alternate" type="text/html" title="Promise &amp;amp; Async/Await" /><published>2021-07-05T00:17:00+09:00</published><updated>2021-07-05T00:17:00+09:00</updated><id>http://localhost:4000/javascript/2021/07/05/Promise-AsyncAwait</id><content type="html" xml:base="http://localhost:4000/javascript/2021/07/05/Promise-AsyncAwait.html"><![CDATA[<h2 id="callback--asynchronous">Callback &amp; Asynchronous</h2>
+
+<ul>
+  <li>콜백함수<br />
+다른 <code class="language-plaintext highlighter-rouge">코드</code>의 인자로 넘겨지는 함수. 넘겨받은 <code class="language-plaintext highlighter-rouge">코드</code>는 특정 조건이 만족하게되면 이 함수를 호출(call back)하게 됨.</li>
+</ul>
+
+<p>synchronous callback은 즉시 호출이 되고, asynchronous callback의 경우 특정 작업이 완료된 후 호출 된다.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//synchronous callback</span>
+<span class="kd">function</span> <span class="nx">printImmediately</span><span class="p">(</span><span class="nx">print</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">print</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="nx">printImmediately</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">hello sync</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">//asynchronous callback</span>
+<span class="kd">function</span> <span class="nx">printWithDelay</span><span class="p">(</span><span class="nx">print</span><span class="p">,</span> <span class="nx">timeout</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">print</span><span class="p">,</span> <span class="nx">timeout</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">printWithDelay</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">hello async</span><span class="dl">"</span><span class="p">),</span> <span class="mi">1000</span><span class="p">);</span>
+</code></pre></div></div>
+
+<ul>
+  <li>비동기 처리를 하다보면 콜백함수에 콜백함수가 연결되는 CallbackChain이 발생할 수 있음. chain이 깊어지면 아래와 같은 문제가 생김
+    <ol>
+      <li>떨어지는 가독성</li>
+      <li>유지보수 및 디버깅 어려움</li>
+      <li>Callback Hell - 콜백에 콜백이 꼬리를 무는 문제</li>
+    </ol>
+  </li>
+</ul>
+
+<h2 id="promise">Promise</h2>
+
+<p>Promise는 비동기적 작업을 위한 객체로 함수에 콜백을 전달하는게 아닌, 콜백을 첨부하는 방식으로 동작.
+이를 사용하여 Callback chain의 문제를 해결할수 있음.</p>
+
+<ul>
+  <li>기존 callback 방식<br />
+Success, fail에 해당하는 함수를 만들어 async함수의 인자로 넘겨주게됨.<br />
+async함수는 동작 결과에 따라 callback 호출</li>
+</ul>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">successCallback</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Audio file ready at URL: </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">result</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">failureCallback</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Error generating audio file: </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">error</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">createAudioFileAsync</span><span class="p">(</span><span class="nx">audioSettings</span><span class="p">,</span> <span class="nx">successCallback</span><span class="p">,</span> <span class="nx">failureCallback</span><span class="p">);</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Promise 방식<br />
+async함수는 Promise객체를 리턴하고, callback함수를 리턴된 Promise객체에 붙여 사용할 수 있음.</li>
+</ul>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">createAudioFileAsync</span><span class="p">(</span><span class="nx">audioSettings</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">successCallback</span><span class="p">,</span> <span class="nx">failureCallback</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p><strong>Promise의 State : pending -&gt; fulfilled or rejected</strong></p>
+
+<h3 id="구성">구성</h3>
+
+<ul>
+  <li>
+    <p>Producer vs Consumer</p>
+
+    <p>Producer - Promise 객체<br />
+ 생성 되는 순간 바로 execute 메소드 동작</p>
+
+    <div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//작업이 성공하는 경우(fulfilled) resolve를, 실패하는 경우(rejected) resject를 호출한다.</span>
+<span class="kd">const</span> <span class="nx">promise</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">//doing some heavy work</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">doing</span><span class="dl">"</span><span class="p">);</span>
+  <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">//resolve("test success");</span>
+    <span class="nx">reject</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">"</span><span class="s2">no network</span><span class="dl">"</span><span class="p">));</span>
+  <span class="p">},</span> <span class="mi">2000</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div>    </div>
+
+    <p>Consumer - Promise객체의 콜백 함수들<br />
+ then, catch, finally로 동작 처리<br />
+ then() - 작업이 성공하는 경우에 대해 정의(두번째 인자로 실패하는 경우에 대해 정의 가능)<br />
+ catch() - 작업이 실패한 경우에 대해 정의<br />
+ finally() - 성공 실패 상관없이 항상 처리되야 하는 경우에 대해 정의</p>
+
+    <div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">promise</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">value</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">))</span>
+  <span class="p">.</span><span class="k">finally</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">final!</span><span class="dl">"</span><span class="p">));</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Error Handling</p>
+
+    <p>catch로 error 처리 가능. 또는 then의 두번째 인자</p>
+
+    <div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">getHen</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span>
+    <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">resolve</span><span class="p">(</span><span class="dl">"</span><span class="s2">hen</span><span class="dl">"</span><span class="p">),</span> <span class="mi">1000</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="kd">const</span> <span class="nx">getEgg</span> <span class="o">=</span> <span class="p">(</span><span class="nx">hen</span><span class="p">)</span> <span class="o">=&gt;</span>
+    <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">reject</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">hen</span><span class="p">}</span><span class="s2"> =&gt; egg`</span><span class="p">)),</span> <span class="mi">1000</span><span class="p">);</span>
+
+
+<span class="kd">const</span> <span class="nx">cook</span> <span class="o">=</span> <span class="p">(</span><span class="nx">egg</span><span class="p">)</span> <span class="o">=&gt;</span>
+    <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">resolve</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">egg</span><span class="p">}</span><span class="s2"> =&gt; fried egg`</span><span class="p">),</span> <span class="mi">1000</span><span class="p">);</span>
+    <span class="p">});</span>
+
+<span class="nx">getHen</span><span class="p">()</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">hen</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">getEgg</span><span class="p">(</span><span class="nx">hen</span><span class="p">))</span>
+    <span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="dl">"</span><span class="s2">bread</span><span class="dl">"</span><span class="p">;</span>
+    <span class="p">})</span> <span class="c1">//앞의 then에서 발생한 에러 처리</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">egg</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">cook</span><span class="p">(</span><span class="nx">egg</span><span class="p">))</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">meal</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">meal</span><span class="p">));</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="promise-chaining">Promise Chaining</h3>
+
+<p>then/catch함수는 새로운 promise를 리턴한다. 이를 통해 chaining이 가능하며, 이전 비동기 작업이 끝난후 다른 비동기 작업을 순차실행할 수 있음.</p>
+
+<ol>
+  <li>then에서 프로미스가 리턴되는 경우, Promise는 그 다음 then에 의해 처리됨</li>
+  <li>
+    <p>Promise에서 그냥 값을 리턴하면 Promise.resolve()를 리턴하는것과 같음</p>
+
+    <div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+  <span class="c1">// 1. Promise를 리턴하므로, 다음 then은 이 프로미스의 작업 완료를 기다린 후 처리됨</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">val</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span>
+      <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">resolve</span><span class="p">(</span><span class="nx">val</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1000</span><span class="p">)</span>
+    <span class="p">);</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">val</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">val</span><span class="p">));</span> <span class="c1">//9</span>
+
+<span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+  <span class="c1">//1. Promise가 아닌 값이 리턴되므로, 다음 then은 바로 값을 처리하려하여 다른 값이 출력됨</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">val</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">val</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">val</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">val</span><span class="p">));</span> <span class="c1">//이상한 값</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h3 id="promise-method">Promise method</h3>
+
+<ul>
+  <li>all : 모든 Promise의 처리를 기다림</li>
+</ul>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">pickAllFruits</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span><span class="nx">getApple</span><span class="p">(),</span> <span class="nx">getBanana</span><span class="p">()]).</span><span class="nx">then</span><span class="p">((</span><span class="nx">fruits</span><span class="p">)</span> <span class="o">=&gt;</span>
+    <span class="nx">fruits</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="dl">"</span><span class="s2"> + </span><span class="dl">"</span><span class="p">)</span>
+  <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">pickAllFruits</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">);</span>
+</code></pre></div></div>
+
+<ul>
+  <li>race : 어느 한개의 Promise 작업만 끝나도 리턴</li>
+</ul>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">pickFirstOne</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">race</span><span class="p">([</span><span class="nx">getApple</span><span class="p">(),</span> <span class="nx">getBanana</span><span class="p">()]);</span>
+<span class="p">}</span>
+
+<span class="nx">pickFirstOne</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="async---await">Async - Await</h2>
+
+<p>Promise역시 반복사용되면 가독성이 떨어짐</p>
+
+<p>Async - Await을 사용하면 기존 Sequential 코드 흐름과 유사하게 비동기 코드 작성 가능</p>
+
+<p>Promise의 Syntactic sugar</p>
+
+<h3 id="async">Async</h3>
+
+<ul>
+  <li>
+    <p>Promise 방식</p>
+
+    <div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">fetchUser</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// return `name`; // pending</span>
+    <span class="nx">resolve</span><span class="p">(</span><span class="s2">`name`</span><span class="p">);</span> <span class="c1">// fulfilled</span>
+    <span class="c1">// reject(new Error(`error`)); // rejected</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">fetchUser</span><span class="p">();</span>
+<span class="nx">user</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">);</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Async 방식</p>
+
+    <p>Async를 사용하면 코드 블록이 Promise로 리턴됨</p>
+
+    <div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//function declaration</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">fetchUser</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="s2">`ellie`</span><span class="p">;</span> <span class="c1">//==return Promise.resolve(`ellie`)</span>
+<span class="p">}</span>
+
+<span class="c1">//function expression</span>
+<span class="kd">const</span> <span class="nx">fetchUser</span> <span class="o">=</span> <span class="k">async</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="s2">`ellie`</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">//arrow function</span>
+<span class="kd">const</span> <span class="nx">fetchUser</span> <span class="o">=</span> <span class="k">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="s2">`ellie`</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kd">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">fetchUser</span><span class="p">();</span>
+<span class="nx">user</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">);</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="await">Await</h3>
+
+<p>async가 있는 경우에만 사용이 가능함</p>
+
+<p>함수의 작업이 끝날때까지(fulfilled 또는 rejected) 대기</p>
+
+<p>async-await을 사용하여 기존 언어와 동일한 방식으로 코드 작성가능</p>
+
+<p>에러처리 역시 try-catch를 사용해야함</p>
+
+<ul>
+  <li>
+    <p>Promise 방식</p>
+
+    <div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">delay</span><span class="p">(</span><span class="nx">ms</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">ms</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">getApple</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">delay</span><span class="p">(</span><span class="mi">1000</span><span class="p">).</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="s2">`🍎`</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">getBanana</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">delay</span><span class="p">(</span><span class="mi">1000</span><span class="p">).</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="s2">`🍌`</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">pickFruits</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">getApple</span><span class="p">().</span><span class="nx">then</span><span class="p">((</span><span class="nx">apple</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">getBanana</span><span class="p">().</span><span class="nx">then</span><span class="p">((</span><span class="nx">banana</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="s2">`</span><span class="p">${</span><span class="nx">apple</span><span class="p">}</span><span class="s2"> + </span><span class="p">${</span><span class="nx">banana</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+<span class="nx">pickFruits</span><span class="p">().</span><span class="nx">then</span><span class="p">((</span><span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">));</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Await 방식</p>
+
+    <div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">delay</span><span class="p">(</span><span class="nx">ms</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">ms</span><span class="p">));</span>
+<span class="p">}</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">getApple</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">await</span> <span class="nx">delay</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+  <span class="k">return</span> <span class="dl">"</span><span class="s2">apple</span><span class="dl">"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">getBanana</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">await</span> <span class="nx">delay</span><span class="p">(</span><span class="mi">2000</span><span class="p">);</span>
+  <span class="k">return</span> <span class="dl">"</span><span class="s2">banana</span><span class="dl">"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">pickFruits</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">apple</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getApple</span><span class="p">();</span>
+  <span class="kd">const</span> <span class="nx">banana</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getBanana</span><span class="p">();</span>
+  <span class="k">return</span> <span class="s2">`</span><span class="p">${</span><span class="nx">apple</span><span class="p">}</span><span class="s2">+</span><span class="p">${</span><span class="nx">banana</span><span class="p">}</span><span class="s2">`</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">pickFruits</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">);</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p>출처 :
+<a href="https://en.wikipedia.org/wiki/Callback_(computer_programming)">wiki-Callback</a>,<a href="https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Promise/">mozilla-Promise</a>,<a href="https://youtu.be/JB_yU6Oe2eE">youtube-Promise</a></p>]]></content><author><name>pss9205</name></author><category term="javascript" /><category term="javascript" /><summary type="html"><![CDATA[Callback &amp; Asynchronous]]></summary></entry><entry><title type="html">vscode에서 Jest 자동 완성이 안되는 경우</title><link href="http://localhost:4000/javascript/2021/06/23/Jest-Setting.html" rel="alternate" type="text/html" title="vscode에서 Jest 자동 완성이 안되는 경우" /><published>2021-06-23T00:17:00+09:00</published><updated>2021-06-23T00:17:00+09:00</updated><id>http://localhost:4000/javascript/2021/06/23/Jest-Setting</id><content type="html" xml:base="http://localhost:4000/javascript/2021/06/23/Jest-Setting.html"><![CDATA[<ol>
+  <li><code class="language-plaintext highlighter-rouge">npm i @types/jest</code> 설치</li>
+</ol>
+
+<ul>
+  <li>jest 관련 type definiton을 가지고 있는 패키지</li>
+</ul>
+
+<ol>
+  <li>add jsconfig.json를 프로젝트 루트 디렉토리에 추가</li>
+</ol>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">jsconfig.json</code> : vscode에서 사용하는 자바스크립트 랭귀지 서비스와 관련된 설정을 지정할 수 있다.</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+    "typeAcquisition": {
+        "include": [
+            "jest"
+        ]
+    }
+}
+</code></pre></div></div>
+
+<pre><code class="language-note">[자바스크립트 랭귀지 서비스](https://github.com/microsoft/TypeScript/wiki/JavaScript-Language-Service-in-Visual-Studio) : vs code에서 자바스크립트 편집을 지원하는 모듈
+</code></pre>]]></content><author><name>pss9205</name></author><category term="javascript" /><category term="javascript" /><summary type="html"><![CDATA[npm i @types/jest 설치]]></summary></entry><entry><title type="html">Node.JS</title><link href="http://localhost:4000/nodejs/2021/05/31/nodejs.html" rel="alternate" type="text/html" title="Node.JS" /><published>2021-05-31T10:17:00+09:00</published><updated>2021-05-31T10:17:00+09:00</updated><id>http://localhost:4000/nodejs/2021/05/31/nodejs</id><content type="html" xml:base="http://localhost:4000/nodejs/2021/05/31/nodejs.html"><![CDATA[<h2 id="nodejs">Node.JS</h2>
+
+<blockquote>
+  <p>Node.js® is a JavaScript runtime built on Chrome’s V8 JavaScript engine.</p>
+</blockquote>
+
+<p>Chrome V8을 기반으로 만들어진 자바스크립트 런타임 엔진.<br />
+v8엔진 이외에도 libuv라는 라이브러리를 사용한다. libuv는 노드의 특성인 이벤트 기반, 논 블로킹 IO모델을 구현한다.</p>
+
+<pre><code class="language-note">런타임 : 특정 언어로 만든 프로그램들을 실행할 수 있는 환경
+</code></pre>
+
+<h3 id="event-driven">Event-Driven</h3>
+
+<p>이벤트가 발생할 때 미리 지정해둔 작업을 수행하는 방식
+NodeJS는 Event-Driven 방식으로 동작하며, 이벤트가 발생하면 이벤트 리스너에 등록해둔 콜백함수를 호출한다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   ┌───────────────────────────┐
+┌─&gt;│           timers          │
+│  └─────────────┬─────────────┘
+│  ┌─────────────┴─────────────┐
+│  │     pending callbacks     │
+│  └─────────────┬─────────────┘
+│  ┌─────────────┴─────────────┐
+│  │       idle, prepare       │
+│  └─────────────┬─────────────┘      ┌───────────────┐
+│  ┌─────────────┴─────────────┐      │   incoming:   │
+│  │           poll            │&lt;─────┤  connections, │
+│  └─────────────┬─────────────┘      │   data, etc.  │
+│  ┌─────────────┴─────────────┐      └───────────────┘
+│  │           check           │
+│  └─────────────┬─────────────┘
+│  ┌─────────────┴─────────────┐
+└──┤      close callbacks      │
+   └───────────────────────────┘
+</code></pre></div></div>
+
+<p>이벤트 루프는 이벤트 발생 시 호출할 콜백 함수들을 관리하고, 호출된 콜백함수의 실행 순서를 결정.<br />
+위의 그림처럼, 여러 개의 내부 단계를 가지고 있으며 각 단계마다 큐가 존재한다. 각 큐에는 이벤트 발생 후 백그라운드에서 넘어온 타이머나 이벤트 리스너의 콜백함수들이 위치함. 이벤트 루프는 단계들을 RR방식으로 순회하며 큐에 있는 것들을 처리한다.</p>
+
+<h3 id="blocking-io-vs-nonblocking-io">Blocking I/O vs NonBlocking I/O</h3>
+
+<p>NodeJS는 I/O를 논블로킹 방식으로 처리한다. I/O작업은 libuv로 넘겨지고 자신의 스레드 풀이나, OS의 커널에게 요청하게 된다.
+작업이 완료되면 이벤트 루프에 알려주고 콜백함수로 등록된다.</p>
+
+<h4 id="blocking">Blocking</h4>
+
+<p>현재의 I/O가 완료될때까지 추가 Javascript 작업이 수행되지 않고 대기 상태에 들어간다.
+Blocking작업이 수행되는 중에는 이벤트 루프가 다음 작업을 계속할수 없음.
+NodeJS에서 제공되는 메소드중 Sync로 끝나는 메소드들이 Blocking으로 동작하는 메소드</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">const</span> <span class="nt">fs</span> <span class="o">=</span> <span class="nt">require</span><span class="o">(</span><span class="s1">'fs'</span><span class="o">)</span><span class="p">;</span>
+<span class="nt">const</span> <span class="nt">data</span> <span class="o">=</span> <span class="nt">fs</span><span class="nc">.readFileSync</span><span class="o">(</span><span class="s1">'/file.md'</span><span class="o">)</span><span class="p">;</span> <span class="c1">// 파일이 다 읽을때까지 다음 메소드 실행안됨</span>
+<span class="nt">console</span><span class="nc">.log</span><span class="o">(</span><span class="nt">data</span><span class="o">)</span><span class="p">;</span>
+<span class="nt">moreWork</span><span class="o">()</span><span class="p">;</span> <span class="c1">// console.log 출력 후 실행됨</span>
+</code></pre></div></div>
+
+<h4 id="non-blocking">Non-Blocking</h4>
+
+<p>I/O 작업 완료를 기다리지 않고 추가 JavaScript작업이 수행된다.<br />
+해당 작업의 콜백 함수는 이벤트 루프의 큐에 추가되며, 작업이 완료되면 이벤트 루프에 의해 콜백 함수가 실행되게 된다.</p>
+
+<div class="language-scss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">function</span> <span class="nt">longTask</span><span class="o">()</span><span class="p">{</span>
+	<span class="c1">//some job taking long time..</span>
+	<span class="nt">console</span><span class="nc">.log</span><span class="o">(</span><span class="s2">"long long.."</span><span class="o">)</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nt">console</span><span class="nc">.log</span><span class="o">(</span><span class="s1">'start'</span><span class="o">)</span><span class="p">;</span>
+<span class="nt">setTimeout</span><span class="o">(</span><span class="nt">longTask</span><span class="o">,</span><span class="nt">10</span><span class="o">)</span><span class="p">;</span>
+<span class="nt">console</span><span class="nc">.log</span><span class="o">(</span><span class="s1">'end'</span><span class="o">)</span><span class="p">;</span> <span class="c1">//longTask의 완료를 기다리지 않고 다음 동작 수행</span>
+</code></pre></div></div>
+
+<h3 id="single-thread">Single Thread</h3>
+
+<p>NodeJS는 내부에 여러 개의 스레드를 가지지만 제어할 수 있는 것은 한개의 스레드이다.<br />
+Non-Blocking방식을 이용해 단일 스레드에서도 여러 요청을 동시에 처리가 가능해진다.</p>
+
+<pre><code class="language-tip">특정 동작(암호화,IO,압축등)을 수행할땐 멀티스레드로 동작하는데 이를 스레드 풀이라 한다.
+노드 12 버전 이상에서는 워커 스레드를 사용해 멀티 스레드로 처리하는 것도 지원된다.
+</code></pre>]]></content><author><name>pss9205</name></author><category term="nodejs" /><category term="node" /><summary type="html"><![CDATA[Node.JS]]></summary></entry></feed>
