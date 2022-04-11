@@ -1,0 +1,901 @@
+<!-- ---
+sort: 2
+---
+
+# JS - Basic
+
+Based On [Youtube](https://youtu.be/wcsVjmHrUQg)
+
+## Variable
+
+- Variable 선언
+    - var  
+    변수 선언전에 사용 및 할당이 가능.  
+    hositing (선언이 scope 최상단으로 이동)  
+    block scope 사용 안함  
+    - let → ES6에 추가됨  
+    hoisting과 같은 `var`의 특징들이 허용되지 않음  
+    `let`은 기존 프로그래밍 문법처럼 더 이해가 쉽고, 간편
+
+    ```jsx
+    {
+    	var age = 4;
+    }
+    console.log(age); // 4
+
+    let globalName = `global name`;
+    {
+    	let name = `ellie`;
+    	console.log(name); // > ellie
+    	name = `hello`;
+    	console.log(name); // > hello
+    	console.log(globalName); // > global name
+    }
+    console.log(name); // > error. out of block
+    console.log(globalName); // > global name
+    ```
+- variable types
+    - primitives, single item: number, string, boolean, null, undefined, symbol
+        1. number: Infinity,NegativeInfinity,NaN
+        2. string: console.log(`${test}`)
+        3. boolean: false-0,null,undefined,NaN,''
+        4. symbol: 고유 식별자가 필요할때 사용함
+
+            string에 따라 동일하게 하려면 Symbol.for('id')를 사용해야함
+
+            ```jsx
+            const sym1=Symbol('id');
+            const sym2=Symbol('id');
+
+            console.log(sym1===sym2) //=> false
+            console.log(sym1.desription) //=> id
+            ```
+
+    - object, box container
+    - function, first class function
+- immutable / mutable
+    - immutable : primitive type, frozen object(object.freeze())
+    - mutalbe : all objetcs
+- Dynamic Typing
+    - 런타임 시에 변수의 타입이 정해짐
+
+## Operator
+
+- String concat
+
+    ```jsx
+    console.log('my'+'cat')
+    console.log('1'+2)
+    console.log(`string literals: 1+2=${1+2}`)
+    ```
+
+- numeric
+
+    ```jsx
+    console.log(1+1)
+    console.log(1-1)
+    console.log(1*1)
+    console.log(1/1)
+    console.log(1%1)
+    console.log(1**1)
+    ```
+
+- equality
+
+    ```jsx
+    //== loose equality
+    const string5='5';
+    const number5=5;
+    console.log(sring5==number5); //true
+
+    //=== strict equality
+    //compare type together
+    console.log(string5===number5); //false
+
+    //object equality
+    const name={name:'test'}
+    const name2={name:'test'}
+    const name3=name1;
+    console.log(name==name2) //false
+    console.log(name===name2) //false
+    console.log(name===name3) //true
+
+    //equality speical
+    console.log(0==false) //true
+    console.log(0===false) //false
+    console.log(''==false) //true
+    console.log(''===false) //false
+    console.log(null==undefined) //true
+    console.log(null===undefined) //false
+    ```
+
+## Function
+
+- first-class function  
+    **function is object in JS**
+    JS에선 함수도 다른 변수와 동일하게 처리된다.  
+    아래 조건을 만족하는 함수를 first-class function이라 하며, JS는 모두 지원
+    ⇒ 변수에 할당이 가능함  
+    ⇒ 다른 함수의 parameter로 전달 가능함   
+    ⇒ 다른 함수에서 반환이 가능함   
+
+- Declaration  
+    ```jsx
+    function name(param1,param2){body... return}
+    ```
+- function expression  
+    function declaration은 hoisting이 가능함  
+    function experssion으로 함수 생성 시 실행 될때 생성됨  
+
+    ```jsx
+    const print=function(){
+    	console.log('print')	
+    }
+    print();
+    const printAgain=print;
+    prinatAgain();
+    ```
+
+- parameters  
+    primitive = passed by value  
+    object = passed by reference  
+    - default parameters(ES6~)
+
+        ```jsx
+        function log(message,from = 'unknown'){
+        	console.log(`${message} by ${from}`);
+        }
+        ```
+
+    - rest parameters(ES6~)
+
+        ```jsx
+        function printAll(...args){
+        	for(let i=0;i<args.length;i++){
+        		console.log(args[i]);
+        	}
+        }
+        ```
+
+    - local scope
+
+        ```jsx
+        let global='global' //global
+        function print(){
+        	let message='hello' //local
+        	function printAnother(){
+        		console.log(message)
+        		let childMessage='hello2'
+        	}
+        //console.log(childMessage) //error
+        }
+        ```
+
+
+
+- function expression을 사용한 callbackFunction  
+
+    ```jsx
+    //pass function as params
+    function randomQuiz(answer,printYes,printNo){
+    	if(answer==='answer'){
+    		printYes();
+    	}
+    	else{
+    		printNo();
+    	}
+    }
+
+    //anonymous function
+    const func1=function(){
+    	console.log('yes')
+    }
+
+    //named function
+    //used for stacktrace and recursive.
+    const func2=function func2(){
+    	console.log('no')
+    }
+
+    console.log('wrong',randomQuiz('wrong',func1,func2);
+    console.log('correct',randomQuiz('answer',func1,func2);
+    ```
+
+- arrow function  
+항상 익명함수
+
+    ```jsx
+    const simplePrint= ()=> console.log('simplePrint')
+    const add=(a,b)=> a+b;
+    const simpleMultiply=(a,b)=>{
+    	//having more than 1 line
+    	return a*b;
+    }
+    ```
+
+- IIFE : immediately invoked function expression
+
+    ```jsx
+    //선언과 동시에 호출하기 위함
+    (function hello(){
+    	console.log('IIFE');
+    })();
+    ```
+
+## Class
+
+Class - declaration / template
+
+introduced in ES6
+
+syntactical sugar over prototype-based inheritance
+
+```jsx
+class Person{
+    constructor(name,age){
+        this.name=name;
+        this.age=age;
+    }
+
+    speak(){
+        console.log(`${this.name}: hello`)
+    }
+}
+
+const me=new Person('ellie',20);
+console.log(me.name);
+console.log(me.speak())
+```
+
+- Getter & Setter
+
+    Getter가 있다면, this.age사용시 getter를 호출
+
+    Setter가 있다면, =사용시 setter를 호출
+
+    ```jsx
+    class User{
+        constructor(name,age){
+            this.name=name;
+            this.age=age;
+        }
+    		//_가 붙은 변수명을 사용해서 일반변수와 구분해야된다.
+    		//eg> this._age=value; / return this_age;
+        get age(){
+            return this._age;
+        }
+
+        set age(value){
+            this._age=value;
+        }
+    }
+
+    const user1=new User('steve',-1);
+    console.log(user1.age);
+    ```
+
+- Static & visibility
+
+    최근에 추가됨
+
+    ```jsx
+    //Private and Public
+    class Experiment{
+        public = 2;
+        #private = 1;
+    }
+
+    //Static properties and method of Class
+    class Article{
+        static name='test'
+        constructor(number){
+            this.number=number;
+        }
+        static printName(){
+            console.log(Article.name);
+        }
+    }
+    ```
+
+- Polymorphism & inheritance
+
+    ```jsx
+    class Shape{
+        constructor(w,h){
+            this.w=w;
+            this.h=h;
+        }
+        getArea(){
+            return this.w*this.h;
+        }
+    }
+
+    class Rectangle extends Shape {} //extends로 상속 가능
+    //overriding
+    class Triangle extends Shape{
+        getArea(){
+            //super.draw(); //parent class호출
+            return this.w*this.h / 2;
+        }
+    }
+    const rectangle=new Rectangle(20,20);
+    console.log(rectangle.getArea());
+
+    //class checking : instanceOf
+    console.log(rectangle instanceof Rectangle);
+    console.log(rectangle instanceof Shape);
+    console.log(rectangle instanceof Object);
+    ```
+
+## Object
+
+Object - instance of class
+
+one of the JS data types
+
+a collection of related data and/or functionality
+
+nearly all objects in JS are instances of object
+
+object is set of key and value, object = {key:value};
+
+- literals and properties
+
+    ```jsx
+    const obj1={}; //'object literal' syntax
+    const obj2=new Object(); //'object constructor' syntax
+
+    const obj={name:'test',age:4};
+
+    obj.hasJob=true // property can be added in runtime
+    delete obj.hasJob //property can be deleted in runtime
+
+    ```
+
+- computed properties
+
+    ```jsx
+    //key should be always string
+    console.log(obj["name"])
+
+    //when we use . and [] ?
+    console.log(obj.name); //<- 이미 키를 알고 접근할때
+    console.log(obj["name"]) //<- 어떤 키가 오는지 모르는 상태 또는 런타임 접근
+    ```
+
+- property value shorthand
+
+    key와 이름이 동일하다면, key 부분 생략가능
+
+    ```jsx
+    const p1={name:'test',age:1};
+    const p2=makePerson('test2',2);
+    function makePerson(name,age){ 
+        return{
+            //name:name,
+            //age:age
+            name,
+            age
+        }
+    }
+    ```
+
+- constructor function
+
+    class 도입전에사용되는 방식
+    함수이지만 생성자처럼 JS에선 오브젝트를 리턴하게됨
+
+    첫글자는 대문자로 사용하자
+
+    ```jsx
+    const p3=new Person('test',4);
+    function Person(name,age){
+        //this={};
+        this.name=name;
+        this.age=age;
+        //return this;
+    }
+
+    ```
+
+- in operator : property existance checking
+
+    ```jsx
+    console.log('name' in p1);
+    ```
+
+- for in, for of
+
+    ```jsx
+    //for(key in obj)
+    for(key in p1){
+        console.log(key)
+        //iterate key in object
+    }
+
+    //for(value of iterable)
+    const arr=[1,2,3,4];
+    for(item of arr){
+        console.log(item)
+        //iterate value in iterable object
+    }
+    ```
+
+- Cloning
+
+    obejct.assign(dest,[obj1,obj2,obj3...]) ⇒ shallow copy
+
+    ```jsx
+    const user={name:'test',age:2};
+    const user2=user; //refer address
+
+    //old way
+    const user4={};
+    for(k in user){
+        user4[k]=user[k]
+    }
+
+    //new way
+    const user3 = Object.assign({}, user); 
+    console.log(user3); // > {name: "test", age:"28"}
+
+    //mixed 2 objects.
+    const fruit1={color:'red'}
+    const fruit2={color:'blue',size:4};
+    const mixed=Object.assign({},fruit1,fruit2);
+    console.log(mixed) //{color:'blue',size:4}
+    ```
+
+## JSON
+
+Java Script Object Notation
+
+Simplest data interchange format
+
+lightweight text-based structure
+
+easy to read
+
+key-value pairs
+
+used for serialization and transmission of data between the network the network connection
+
+independent programming language and platform
+
+1. Object to JSON
+
+- Stringify
+
+```jsx
+let json = JSON.stringify(true);
+console.log(json);
+
+json = JSON.stringify(["apple", "banana"]);
+console.log(json);
+
+const rabbit = {
+  name: "rabbit",
+  color: "white",
+  size: null,
+  birthDate: new Date(),
+  //function, symbol will not be included
+  jump: () => {
+    console.log(`${name} can jump!`);
+  },
+};
+
+json = JSON.stringify(rabbit);
+console.log(json);
+
+json = JSON.stringify(rabbit, ["name", "color"]);
+console.log(json);
+
+json = JSON.stringify(rabbit, (key, value) => {
+  return key === "name" ? "name" : value;
+});
+console.log(json);
+```
+
+2. JSON to Object
+
+- parse
+
+```jsx
+json = JSON.stringify(rabbit);
+const obj = JSON.parse(json);
+console.log(obj);
+rabbit.jump();
+//obj.jump(); //not work. method는 serialize되지 않아 없어짐
+
+console.log(rabbit.birthDate.getDate());
+//console.log(obj.birthDate.getDate()); //not work. birthDate became string!
+
+const obj2 = JSON.parse(json, (key, value) => {
+  return key === "birthDate" ? new Date(value) : value;
+}); //object로 변환하면서 birthDate를 Date Object로 변환
+
+console.log(obj2.birthDate.getDate());
+```
+
+## Callback & Asynchronous
+
+JavaScript is synchronous.
+
+Execute the code block in order after hoisting.
+
+```jsx
+//synchronous callback
+function printImmediately(print) {
+  print();
+}
+printImmediately(() => {
+  console.log("hello sync");
+});
+
+//asynchronous callback
+function printWithDelay(print, timeout) {
+  setTimeout(print, timeout);
+}
+printWithDelay(() => console.log("hello async"), 1000);
+```
+
+- Problem of CallbackChain
+
+    Poor Readibility
+
+    Hard to maintanence and Debugging
+
+    Example of Callback Hell
+
+## Promise
+
+promise is an object for asynchronous operation
+
+**State : pending -> fulfilled or rejected**
+
+- Producer vs Consumer
+
+    Producer
+
+    생성 되는 순간 바로 execute 메소드 동작함
+
+    ```jsx
+    const promise = new Promise((resolve, reject) => {
+      //doing some heavy work
+      console.log("doing");
+      setTimeout(() => {
+        //resolve("test success");
+        reject(new Error("no network"));
+      }, 2000);
+    });
+    ```
+
+    Consumer
+
+    then, catch, finally로 동작 처리
+
+    ```jsx
+    promise
+      .then((value) => {
+        //resolve case
+        console.log(value);
+      })
+      .catch((error) => console.log(error)) //reject case
+      .finally(() => console.log("final!")); //last call after above handling
+    ```
+
+- Promise Chaining
+
+    then에서 promise를 리턴할 수 있음
+
+    ```jsx
+    const fetchNumber = new Promise((resolve, reject) => {
+      setTimeout(() => resolve(1), 1000);
+    });
+
+    fetchNumber
+      .then((val) => val * 2)
+      .then((val) => val * 3)
+      .then((val) => {
+        //promise도 리턴 가능
+        return new Promise((resolve, reject) =>
+          setTimeout(() => resolve(val - 1), 1000)
+        );
+      })
+      .then((val) => console.log(val));
+    ```
+
+- Error Handling
+
+    catch로 error 처리 가능
+
+    ```jsx
+    const getHen = () =>
+      new Promise((resolve, reject) => {
+        setTimeout(() => resolve("hen"), 1000);
+      });
+    const getEgg = (hen) =>
+      new Promise((resolve, reject) => {
+        //setTimeout(() => reject(new Error(`${hen} => egg`)), 1000);
+        setTimeout(() => resolve(`${hen} => egg`), 1000);
+      });
+
+    const cook = (egg) =>
+      new Promise((resolve, reject) => {
+        setTimeout(() => resolve(`${egg} => fried egg`), 1000);
+      });
+
+    getHen()
+      .then((hen) => getEgg(hen))
+      .catch((error) => {
+        return "bread";
+      }) //앞의 then에서 발생한 에러 처리
+      .then((egg) => cook(egg))
+      .then((meal) => console.log(meal));
+
+    //if callback function has 1 argument, we can omit
+    //getHen()
+    //  .then(getEgg)
+    //  .then(cook);
+    ```
+
+## Async - Await
+
+Promise역시 반복사용되면 가독성이 떨어짐
+
+Async - Await을 사용하면 기존 Sequential 코드 흐름과 유사하게 비동기 코드 작성 가능
+
+Promise의 Syntactic sugar
+
+- Async
+
+    Promise
+
+    ```jsx
+    function fetchUser() {
+      return new Promise((resolve, reject) => {
+        // return `ellie`; // pending
+    		resolve(`ellie`); // fulfilled
+    		// reject(new Error(`error`)); // rejected
+      });
+    }
+
+    const user = fetchUser();
+    user.then(console.log);
+    ```
+
+    Async
+
+    Async를 사용하면 코드 블록이 Promise로 리턴됨
+
+    ```jsx
+    //function declaration
+    async function fetchUser() {
+      return `ellie`;
+    }
+
+    //function expression
+    const fetchUser = async function() {
+      return `ellie`;
+    };
+
+    //arrow function
+    const fetchUser = async () => {
+      return `ellie`;
+    };
+
+    const user = fetchUser();
+    user.then(console.log);
+    ```
+
+- Await
+
+    can be used only in async
+
+    wait until function finished
+
+    with async and await, we can write a code general way.
+
+    error handling with try-catch
+
+    Promise
+
+    ```jsx
+    function delay(ms) {
+      return new Promise (resolve => setTimeout(resolve, ms));
+    }
+
+    function getApple() {
+      return delay(1000)
+      .then(() => `🍎`);
+    }
+    function getBanana() {
+      return delay(1000)
+      .then(() => `🍌`);
+    }
+
+    function pickFruits() {
+      return getApple()
+      .then(apple => {
+        return getBanana().then(banana => `${apple} + ${banana}`);
+      });
+    }
+    pickFruits().then(result => console.log(result));
+    ```
+
+    Await
+
+    ```jsx
+    function delay(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+    async function getApple() {
+      await delay(1000);
+      return "apple";
+    }
+
+    async function getBanana() {
+      await delay(2000);
+      return "banana";
+    }
+
+    async function pickFruits() {
+      const apple = await getApple();
+      const banana = await getBanana();
+      return `${apple}+${banana}`;
+    }
+
+    pickFruits().then(console.log);
+    ```
+
+- Promise method
+
+    ```jsx
+    //all
+    //run all promise asynchronously
+    function pickAllFruits() {
+      return Promise.all([getApple(), getBanana()]).then((fruits) =>
+        fruits.join(" + ")
+      );
+    }
+
+    pickAllFruits().then(console.log);
+
+    //race
+    //return the first finished result
+    function pickFirstOne() {
+      return Promise.race([getApple(), getBanana()]);
+    }
+
+    pickFirstOne().then(console.log);
+    ```
+
+## Example of CallBack / Promise / Async-Await
+
+- Callback
+
+    ```jsx
+    class UserStorage {
+      loginUser(id, pw, onSuccess, onError) {
+        setTimeout(() => {
+          if ((id === "pss" && pw === "12") || (id === "psss" && pw === "12")) {
+            onSuccess(id);
+          } else {
+            onError(new Error("not found"));
+          }
+        }, 2000);
+      }
+
+      getRoles(user, onSuccess, onError) {
+        setTimeout(() => {
+          if (user === "pss") {
+            onSuccess({ name: "pss", role: "admin" });
+          } else {
+            onError(new Error("no access"));
+          }
+        });
+      }
+    }
+
+    const userStorage = new UserStorage();
+    const id = prompt("enter your id");
+    const pw = prompt("enter your pw");
+    userStorage.loginUser(
+      id,
+      pw,
+      (user) => {
+        userStorage.getRoles(
+          user,
+          (userWithRole) => {
+            alert(
+              `Hello ${userWithRole.name}, you have a ${userWithRole.role} role`
+            );
+          },
+          (error) => {
+            console.log(error);
+          }
+        );
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+    ```
+
+- Promise
+
+    ```jsx
+    class UserStorage {
+      loginUser(id, pw) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            if ((id === "pss" && pw === "12") || (id === "psss" && pw === "12")) {
+              resolve(id);
+            } else {
+              reject(new Error("not found"));
+            }
+          }, 2000);
+        });
+      }
+
+      getRoles(user, onSuccess, onError) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            if (user === "pss") {
+              resolve({ name: "pss", role: "admin" });
+            } else {
+              reject(new Error("no access"));
+            }
+          });
+        });
+      }
+    }
+
+    const userStorage = new UserStorage();
+    const id = prompt("enter your id");
+    const pw = prompt("enter your pw");
+
+    userStorage
+      .loginUser(id, pw)
+      .then(userStorage.getRoles)
+      .then((user) => alert(`Hello ${user.name}, you have a ${user.role} role`))
+      .catch(console.log);
+    ```
+
+- Async-Await
+
+    ```jsx
+    class UserStorage {
+      async loginUser(id, pw) {
+        await delay(2000);
+        if ((id === "pss" && pw === "12") || (id === "psss" && pw === "12")) {
+          return id;
+        } else {
+          throw new Error("not found");
+        }
+      }
+
+      async getRoles(user) {
+        if (user === "pss") {
+          return { name: "pss", role: "admin" };
+        } else {
+          throw new Error("no access");
+        }
+      }
+
+      async login(id, pw) {
+        const user = await this.loginUser(id, pw);
+        const role = await this.getRoles(user);
+        return role;
+      }
+    }
+
+    const userStorage = new UserStorage();
+    const id = prompt("enter your id");
+    const pw = prompt("enter your pw");
+
+    userStorage
+      .login(id, pw)
+      .then((user) => alert(`Hello ${user.name}, you have a ${user.role} role`))
+      .catch(console.log);
+    ``` -->
