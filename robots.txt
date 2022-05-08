@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://pss9205.github.io/sitemap.xml
